@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="theme-color" content="#6d28d9" />
+<title>POISE Time Clock — Demo</title>
+<body>
+<style>
+  :root {
+    --ground: #faf9fc;
+    --surface: #ffffff;
+    --surface-2: #f4f1f9;
+    --ink: #1a1523;
+    --ink-soft: #5b5468;
+    --ink-faint: #8b8598;
+    --border: #e6e2ee;
+    --accent: #6d28d9;
+    --accent-strong: #5b21b6;
+    --accent-tint: #f2ecfd;
+    --good: #15803d;
+    --good-tint: #e7f4ec;
+    --bad: #dc2626;
+    --bad-tint: #fbeaea;
+    --warn: #b45309;
+    --warn-tint: #fbf1e2;
+    --shadow: 0 1px 2px rgba(26, 21, 35, .06), 0 12px 32px -12px rgba(26, 21, 35, .18);
+    --radius: 16px;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #14111c;
+      --surface: #1e1a29;
+      --surface-2: #251f33;
+      --ink: #f3f0f9;
+      --ink-soft: #b3adc2;
+      --ink-faint: #837d94;
+      --border: #322b42;
+      --accent: #a884f5;
+      --accent-strong: #b99cf7;
+      --accent-tint: #241d38;
+      --good: #4ade80;
+      --good-tint: #16281e;
+      --bad: #f87171;
+      --bad-tint: #2b1717;
+      --warn: #fbbf24;
+      --warn-tint: #2a2112;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 18px 40px -16px rgba(0, 0, 0, .6);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #faf9fc; --surface: #ffffff; --surface-2: #f4f1f9;
+    --ink: #1a1523; --ink-soft: #5b5468; --ink-faint: #8b8598; --border: #e6e2ee;
+    --accent: #6d28d9; --accent-strong: #5b21b6; --accent-tint: #f2ecfd;
+    --good: #15803d; --good-tint: #e7f4ec; --bad: #dc2626; --bad-tint: #fbeaea;
+    --warn: #b45309; --warn-tint: #fbf1e2;
+    --shadow: 0 1px 2px rgba(26,21,35,.06), 0 12px 32px -12px rgba(26,21,35,.18);
+  }
+  :root[data-theme="dark"] {
+    --ground: #14111c; --surface: #1e1a29; --surface-2: #251f33;
+    --ink: #f3f0f9; --ink-soft: #b3adc2; --ink-faint: #837d94; --border: #322b42;
+    --accent: #a884f5; --accent-strong: #b99cf7; --accent-tint: #241d38;
+    --good: #4ade80; --good-tint: #16281e; --bad: #f87171; --bad-tint: #2b1717;
+    --warn: #fbbf24; --warn-tint: #2a2112;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 18px 40px -16px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .app { max-width: 940px; margin: 0 auto; padding: 20px 18px 64px; }
+
+  /* Top bar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--accent); color: #fff; font-size: 22px; flex: none;
+    box-shadow: 0 6px 16px -6px var(--accent);
+  }
+  .brand strong { display: block; font-size: 15px; letter-spacing: .14em; }
+  .brand span { display: block; font-size: 12px; color: var(--ink-faint); letter-spacing: .02em; }
+
+  .seg {
+    display: inline-flex; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px;
+  }
+  .seg button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    font: inherit; font-weight: 600; font-size: 13px; color: var(--ink-soft);
+    padding: 7px 18px; border-radius: 999px; transition: color .15s, background .15s;
+  }
+  .seg button.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow); }
+  .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .demo-note {
+    font-size: 12.5px; color: var(--ink-soft); background: var(--accent-tint);
+    border: 1px solid var(--border); border-radius: 12px; padding: 10px 13px; margin: 0 0 22px;
+  }
+  .demo-note b { color: var(--accent-strong); }
+
+  h2.view-title { font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-faint); margin: 0 0 14px; font-weight: 600; }
+
+  /* Clock card */
+  .clock-wrap { display: flex; justify-content: center; }
+  .clock-card {
+    position: relative; width: 100%; max-width: 400px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow);
+    padding: 20px; overflow: hidden;
+  }
+  .field { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft);
+    letter-spacing: .02em; margin-bottom: 16px; }
+  .field select {
+    display: block; width: 100%; margin-top: 6px; font: inherit; font-size: 15px; font-weight: 500;
+    color: var(--ink); background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 11px; padding: 11px 12px; cursor: pointer;
+  }
+  .field select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .camera {
+    position: relative; aspect-ratio: 1/1; width: 100%; border-radius: 16px; overflow: hidden;
+    background: #0d0a14; margin-bottom: 14px; display: grid; place-items: center;
+  }
+  .camera video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; }
+  .camera.live video { display: block; }
+  .cam-fallback {
+    position: absolute; inset: 0; display: grid; place-items: center; gap: 8px; text-align: center;
+    padding: 20px; color: #cbc4dd;
+  }
+  .camera.live .cam-fallback { display: none; }
+  .cam-fallback .ring { width: 54px; height: 54px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.28); display: grid; place-items: center; font-size: 22px; }
+  .cam-fallback small { font-size: 11.5px; color: #9d95b3; max-width: 220px; line-height: 1.4; }
+  .cam-badge {
+    position: absolute; left: 10px; bottom: 10px; display: none; align-items: center; gap: 6px;
+    background: rgba(13,10,20,.66); color: #fff; font-size: 11px; font-weight: 600;
+    padding: 4px 9px; border-radius: 999px; backdrop-filter: blur(3px);
+  }
+  .camera.live .cam-badge { display: inline-flex; }
+  .cam-badge i { width: 7px; height: 7px; border-radius: 50%; background: #ef4444; display: block;
+    animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+  .status-row {
+    display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+  .status-row .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); flex: none; }
+  .status-row .dot.off { background: var(--ink-faint); }
+
+  .punch {
+    appearance: none; border: 0; cursor: pointer; font: inherit; font-weight: 700; font-size: 18px;
+    color: #fff; width: 100%; padding: 17px; border-radius: 15px; transition: transform .1s, filter .15s;
+    letter-spacing: .01em;
+  }
+  .punch.in { background: var(--good); box-shadow: 0 10px 24px -12px var(--good); }
+  .punch.out { background: var(--bad); box-shadow: 0 10px 24px -12px var(--bad); }
+  .punch:active { transform: translateY(1px); }
+  .punch:hover { filter: brightness(1.06); }
+  .punch:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .last-punch { text-align: center; font-size: 12px; color: var(--ink-faint); margin: 14px 0 0; }
+  .last-punch .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* Confirmation overlay */
+  .confirm {
+    position: absolute; inset: 0; background: var(--surface); display: grid; place-items: center;
+    text-align: center; padding: 28px; animation: rise .3s ease;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .confirm, .cam-badge i { animation: none; } .punch:active { transform: none; } }
+  .confirm .check {
+    width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--good-tint); color: var(--good); font-size: 34px; margin-bottom: 6px;
+  }
+  .confirm img { width: 92px; height: 92px; border-radius: 14px; object-fit: cover; margin-top: 4px;
+    border: 1px solid var(--border); }
+  .confirm h3 { margin: 12px 0 2px; font-size: 21px; letter-spacing: -.01em; }
+  .confirm p { margin: 0; color: var(--ink-soft); font-size: 13.5px; }
+  .confirm .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .confirm button {
+    margin-top: 20px; appearance: none; border: 1px solid var(--border); background: var(--surface-2);
+    color: var(--ink); font: inherit; font-weight: 600; font-size: 14px; padding: 10px 22px;
+    border-radius: 11px; cursor: pointer;
+  }
+  .confirm button:hover { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-strong); }
+
+  /* Dashboard */
+  .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 26px; }
+  .sum-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 15px 16px; box-shadow: var(--shadow); }
+  .sum-card .who { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+  .avatar { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+    font-size: 12px; font-weight: 700; color: #fff; flex: none; }
+  .sum-card .who b { font-size: 14px; font-weight: 600; }
+  .sum-card .hours { font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+  .sum-card .hours span { font-size: 13px; color: var(--ink-faint); font-family: var(--sans); margin-left: 3px; }
+  .sum-card .meta { font-size: 11.5px; color: var(--ink-faint); margin-top: 4px; }
+  .sum-card .meta .flag { color: var(--warn); font-weight: 600; }
+
+  .table-wrap { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+  .scroll-x { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  thead th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 12px 14px; background: var(--surface-2);
+    border-bottom: 1px solid var(--border); }
+  tbody td { padding: 10px 14px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--surface-2); }
+  td .thumb { width: 40px; height: 40px; border-radius: 9px; object-fit: cover; display: block; }
+  td.time { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink-soft); white-space: nowrap; }
+  td .name { font-weight: 600; }
+
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .pill.in { background: var(--good-tint); color: var(--good); }
+  .pill.out { background: var(--bad-tint); color: var(--bad); }
+  .pill.open { background: var(--accent-tint); color: var(--accent-strong); }
+  .pill.warn { background: var(--warn-tint); color: var(--warn); }
+
+  .empty { padding: 40px 16px; text-align: center; color: var(--ink-faint); font-size: 13.5px; }
+
+  .dash-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    flex-wrap: wrap; margin-top: 18px; }
+  .ghost-btn { appearance: none; background: transparent; border: 1px solid var(--border); color: var(--ink-soft);
+    font: inherit; font-weight: 600; font-size: 13px; padding: 9px 16px; border-radius: 10px; cursor: pointer; }
+  .ghost-btn:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-tint); }
+  .hint { font-size: 12px; color: var(--ink-faint); }
+
+  [hidden] { display: none !important; }
+</style>
+
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◷</span>
+      <div>
+        <strong>POISE</strong>
+        <span>Time Clock · Demo</span>
+      </div>
+    </div>
+    <div class="seg" role="tablist" aria-label="View">
+      <button id="tab-clock" role="tab" class="active" data-view="clock" aria-selected="true">Clock</button>
+      <button id="tab-dashboard" role="tab" data-view="dashboard" aria-selected="false">Dashboard</button>
+    </div>
+  </div>
+
+  <p class="demo-note">
+    <b>Demo mode.</b> Runs entirely in your browser — no GPS, no server, no login.
+    Punches are saved on this device and timestamped locally (a production build sets
+    the time on the server so it can’t be edited).
+  </p>
+
+  <!-- CLOCK VIEW -->
+  <section id="view-clock">
+    <div class="clock-wrap">
+      <div class="clock-card">
+        <label class="field" for="employee">Who’s clocking?
+          <select id="employee"></select>
+        </label>
+
+        <div class="camera" id="camera">
+          <video id="video" playsinline muted autoplay></video>
+          <div class="cam-fallback">
+            <span class="ring" aria-hidden="true">📷</span>
+            <small id="camMsg">Starting camera…</small>
+          </div>
+          <span class="cam-badge"><i></i> Live</span>
+        </div>
+
+        <div class="status-row">
+          <span class="dot" id="camDot"></span>
+          <span id="camStatus">Camera ready — a photo is captured with each punch.</span>
+        </div>
+
+        <button id="punchBtn" class="punch in">Clock In</button>
+        <p class="last-punch" id="lastPunch"></p>
+
+        <div class="confirm" id="confirm" hidden>
+          <div>
+            <div class="check" aria-hidden="true">✓</div>
+            <img id="confirmPhoto" alt="Photo captured for this punch" />
+            <h3 id="confirmTitle">You’re clocked in</h3>
+            <p><span class="mono" id="confirmTime"></span></p>
+            <button id="confirmDone" type="button">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD VIEW -->
+  <section id="view-dashboard" hidden>
+    <h2 class="view-title">Hours this view</h2>
+    <div class="summary" id="payroll"></div>
+
+    <h2 class="view-title">All punches</h2>
+    <div class="table-wrap">
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr>
+              <th>Photo</th><th>Employee</th><th>Type</th><th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="punchRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dash-actions">
+      <span class="hint">Newest first · photos and times are stored locally in this browser.</span>
+      <button class="ghost-btn" id="resetBtn" type="button">Reset demo data</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORE_KEY = "poise.demo.punches.v2";
+  var PALETTE = ["#6d28d9", "#0ea5e9", "#db2777", "#059669", "#d97706"];
+
+  var EMPLOYEES = [
+    { id: "e1", name: "Ava Chen" },
+    { id: "e2", name: "Marcus Reid" },
+    { id: "e3", name: "Priya Nair" },
+    { id: "e4", name: "Devon Brooks" }
+  ];
+
+  function initials(name) {
+    return name.split(/\s+/).map(function (p) { return p[0]; }).join("").slice(0, 2).toUpperCase();
+  }
+  function colorFor(id) {
+    var i = EMPLOYEES.findIndex(function (e) { return e.id === id; });
+    return PALETTE[(i < 0 ? 0 : i) % PALETTE.length];
+  }
+  function empName(id) {
+    var e = EMPLOYEES.find(function (x) { return x.id === id; });
+    return e ? e.name : "Unknown";
+  }
+
+  // ---- Placeholder "photo": draw initials on a canvas when no live camera ----
+  function placeholderPhoto(id, when) {
+    var c = document.createElement("canvas");
+    c.width = 200; c.height = 200;
+    var g = c.getContext("2d");
+    var base = colorFor(id);
+    var grad = g.createLinearGradient(0, 0, 200, 200);
+    grad.addColorStop(0, base);
+    grad.addColorStop(1, "#1a1523");
+    g.fillStyle = grad; g.fillRect(0, 0, 200, 200);
+    g.fillStyle = "rgba(255,255,255,.92)";
+    g.font = "700 78px system-ui, sans-serif";
+    g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillText(initials(empName(id)), 100, 92);
+    g.font = "600 13px ui-monospace, monospace";
+    g.fillStyle = "rgba(255,255,255,.7)";
+    g.fillText(fmtTime(when), 100, 150);
+    g.font = "700 10px system-ui, sans-serif";
+    g.fillStyle = "rgba(255,255,255,.5)";
+    g.fillText("DEMO · NO CAMERA", 100, 172);
+    return c.toDataURL("image/jpeg", 0.8);
+  }
+
+  // ---- Storage ----
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return null;
+  }
+  function save(list) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+  function seed() {
+    var now = new Date();
+    function at(dayOffset, h, m) {
+      var d = new Date(now);
+      d.setDate(d.getDate() + dayOffset);
+      d.setHours(h, m, 0, 0);
+      return d.toISOString();
+    }
+    var list = [
+      { employeeId: "e2", type: "in", time: at(-1, 8, 2) },
+      { employeeId: "e3", type: "in", time: at(-1, 8, 58) },
+      { employeeId: "e2", type: "out", time: at(-1, 16, 11) },
+      { employeeId: "e3", type: "out", time: at(-1, 17, 3) },
+      { employeeId: "e4", type: "in", time: at(-1, 12, 30) },
+      { employeeId: "e4", type: "out", time: at(-1, 20, 45) },
+      { employeeId: "e1", type: "in", time: at(0, 9, 5) }   // still clocked in today
+    ];
+    return list.map(function (p) {
+      return {
+        id: rid(),
+        employeeId: p.employeeId,
+        type: p.type,
+        time: p.time,
+        photo: placeholderPhoto(p.employeeId, new Date(p.time))
+      };
+    });
+  }
+  function rid() { return "p" + Math.random().toString(36).slice(2, 10); }
+
+  var punches = load();
+  if (!punches) { punches = seed(); save(punches); }
+
+  // ---- Shift pairing (mirrors the production lib/shifts logic) ----
+  function pairShifts(all) {
+    var byEmp = {};
+    all.forEach(function (p) { (byEmp[p.employeeId] = byEmp[p.employeeId] || []).push(p); });
+    var shifts = [];
+    Object.keys(byEmp).forEach(function (empId) {
+      var ordered = byEmp[empId].slice().sort(function (a, b) {
+        return new Date(a.time) - new Date(b.time);
+      });
+      var open = null;
+      ordered.forEach(function (p) {
+        if (p.type === "in") {
+          if (open) shifts.push(mk(empId, open, null, "double clock-in"));
+          open = p;
+        } else {
+          if (open) { shifts.push(mk(empId, open, p, null)); open = null; }
+          else shifts.push(mk(empId, p, null, "orphan clock-out"));
+        }
+      });
+      if (open) shifts.push(mk(empId, open, null, null));
+    });
+    return shifts;
+  }
+  function mk(empId, cin, cout, anomaly) {
+    var hours = null;
+    if (cout && anomaly !== "orphan clock-out") {
+      hours = Math.max(0, (new Date(cout.time) - new Date(cin.time)) / 3600000);
+    }
+    return { employeeId: empId, hours: hours, open: !cout && !anomaly, anomaly: anomaly };
+  }
+  function summarize() {
+    var rows = {};
+    pairShifts(punches).forEach(function (s) {
+      var r = rows[s.employeeId] || { hours: 0, shifts: 0, open: 0, anomalies: 0 };
+      if (s.hours != null) { r.hours += s.hours; r.shifts += 1; }
+      if (s.open) r.open += 1;
+      if (s.anomaly) r.anomalies += 1;
+      rows[s.employeeId] = r;
+    });
+    return EMPLOYEES.filter(function (e) { return rows[e.id]; })
+      .map(function (e) { return Object.assign({ id: e.id, name: e.name }, rows[e.id]); });
+  }
+
+  // ---- Formatting ----
+  function fmtTime(d) {
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  function fmtFull(d) {
+    return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" }) +
+      " · " + fmtTime(d);
+  }
+
+  // ---- Elements ----
+  var $ = function (id) { return document.getElementById(id); };
+  var employeeSel = $("employee");
+  var punchBtn = $("punchBtn");
+  var lastPunchEl = $("lastPunch");
+  var confirmEl = $("confirm");
+
+  EMPLOYEES.forEach(function (e) {
+    var o = document.createElement("option");
+    o.value = e.id; o.textContent = e.name;
+    employeeSel.appendChild(o);
+  });
+
+  function lastPunchFor(id) {
+    var mine = punches.filter(function (p) { return p.employeeId === id; })
+      .sort(function (a, b) { return new Date(b.time) - new Date(a.time); });
+    return mine[0] || null;
+  }
+  function nextType(id) {
+    var lp = lastPunchFor(id);
+    return (!lp || lp.type === "out") ? "in" : "out";
+  }
+
+  function renderClock() {
+    var id = employeeSel.value;
+    var next = nextType(id);
+    punchBtn.className = "punch " + next;
+    punchBtn.textContent = next === "in" ? "Clock In" : "Clock Out";
+    var lp = lastPunchFor(id);
+    lastPunchEl.innerHTML = lp
+      ? "Last: clocked " + lp.type + " · <span class='mono'>" + fmtFull(new Date(lp.time)) + "</span>"
+      : "No punches yet for this person.";
+  }
+
+  // ---- Camera ----
+  var video = $("video");
+  var cameraBox = $("camera");
+  var camMsg = $("camMsg");
+  var camStatus = $("camStatus");
+  var camDot = $("camDot");
+  var streamOk = false;
+
+  function startCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      camFail("This browser can’t access the camera. Punches use a placeholder photo.");
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+      .then(function (stream) {
+        video.srcObject = stream;
+        streamOk = true;
+        cameraBox.classList.add("live");
+        camStatus.textContent = "Camera ready — a photo is captured with each punch.";
+        camDot.classList.remove("off");
+      })
+      .catch(function () {
+        camFail("Camera unavailable or blocked. Punches still work using a placeholder photo.");
+      });
+  }
+  function camFail(msg) {
+    streamOk = false;
+    cameraBox.classList.remove("live");
+    camMsg.textContent = msg;
+    camStatus.textContent = "No camera — a labelled placeholder photo is used instead.";
+    camDot.classList.add("off");
+  }
+
+  function capture(id, when) {
+    if (streamOk && video.videoWidth) {
+      var size = Math.min(video.videoWidth, video.videoHeight);
+      var c = document.createElement("canvas");
+      c.width = c.height = size;
+      var g = c.getContext("2d");
+      g.translate(size, 0); g.scale(-1, 1); // mirror to match preview
+      var sx = (video.videoWidth - size) / 2, sy = (video.videoHeight - size) / 2;
+      g.drawImage(video, sx, sy, size, size, 0, 0, size, size);
+      return c.toDataURL("image/jpeg", 0.82);
+    }
+    return placeholderPhoto(id, when);
+  }
+
+  // ---- Punch ----
+  punchBtn.addEventListener("click", function () {
+    var id = employeeSel.value;
+    var when = new Date();
+    var type = nextType(id);
+    var photo = capture(id, when);
+    punches.push({ id: rid(), employeeId: id, type: type, time: when.toISOString(), photo: photo });
+    save(punches);
+
+    $("confirmPhoto").src = photo;
+    $("confirmTitle").textContent = "You’re clocked " + type;
+    $("confirmTime").textContent = fmtFull(when);
+    confirmEl.hidden = false;
+    renderClock();
+    renderDashboard();
+  });
+  $("confirmDone").addEventListener("click", function () { confirmEl.hidden = true; });
+  employeeSel.addEventListener("change", function () { confirmEl.hidden = true; renderClock(); });
+
+  // ---- Dashboard render ----
+  function renderDashboard() {
+    var pay = $("payroll");
+    var summary = summarize();
+    pay.innerHTML = "";
+    if (!summary.length) {
+      pay.innerHTML = "<p class='hint'>No completed shifts yet.</p>";
+    }
+    summary.forEach(function (r) {
+      var card = document.createElement("div");
+      card.className = "sum-card";
+      var meta = [];
+      if (r.open) meta.push("<span>" + r.open + " in progress</span>");
+      if (r.anomalies) meta.push("<span class='flag'>" + r.anomalies + " to review</span>");
+      card.innerHTML =
+        "<div class='who'><span class='avatar' style='background:" + colorFor(r.id) + "'>" +
+          initials(r.name) + "</span><b>" + r.name + "</b></div>" +
+        "<div class='hours'>" + r.hours.toFixed(2) + "<span>h</span></div>" +
+        "<div class='meta'>" + (meta.join(" · ") || r.shifts + " shift" + (r.shifts === 1 ? "" : "s")) + "</div>";
+      pay.appendChild(card);
+    });
+
+    var rows = $("punchRows");
+    rows.innerHTML = "";
+    var ordered = punches.slice().sort(function (a, b) { return new Date(b.time) - new Date(a.time); });
+    if (!ordered.length) {
+      rows.innerHTML = "<tr><td colspan='4'><div class='empty'>No punches yet.</div></td></tr>";
+      return;
+    }
+    ordered.forEach(function (p) {
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td><img class='thumb' src='" + p.photo + "' alt='' /></td>" +
+        "<td><span class='name'>" + empName(p.employeeId) + "</span></td>" +
+        "<td><span class='pill " + p.type + "'>" + (p.type === "in" ? "Clock In" : "Clock Out") + "</span></td>" +
+        "<td class='time'>" + fmtFull(new Date(p.time)) + "</td>";
+      rows.appendChild(tr);
+    });
+  }
+
+  // ---- Tabs ----
+  var tabClock = $("tab-clock"), tabDash = $("tab-dashboard");
+  function setView(v) {
+    var clock = v === "clock";
+    tabClock.classList.toggle("active", clock);
+    tabDash.classList.toggle("active", !clock);
+    tabClock.setAttribute("aria-selected", clock);
+    tabDash.setAttribute("aria-selected", !clock);
+    $("view-clock").hidden = !clock;
+    $("view-dashboard").hidden = clock;
+    if (!clock) renderDashboard();
+  }
+  tabClock.addEventListener("click", function () { setView("clock"); });
+  tabDash.addEventListener("click", function () { setView("dashboard"); });
+
+  // ---- Reset ----
+  $("resetBtn").addEventListener("click", function () {
+    if (!confirm("Clear all demo punches and reload the sample data?")) return;
+    punches = seed();
+    save(punches);
+    renderClock();
+    renderDashboard();
+  });
+
+  // ---- Go ----
+  renderClock();
+  renderDashboard();
+  startCamera();
+})();
+</script>
+</body>
+</html>
