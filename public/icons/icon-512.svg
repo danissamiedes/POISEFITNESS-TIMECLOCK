@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="108" fill="#6d28d9"/>
-  <circle cx="256" cy="256" r="155" fill="none" stroke="#f5f3ff" stroke-width="26"/>
-  <line x1="256" y1="256" x2="256" y2="154" stroke="#f5f3ff" stroke-width="26" stroke-linecap="round"/>
-  <line x1="256" y1="256" x2="330" y2="294" stroke="#f5f3ff" stroke-width="26" stroke-linecap="round"/>
-  <circle cx="256" cy="256" r="18" fill="#f5f3ff"/>
+  <rect width="512" height="512" rx="108" fill="#db2777"/>
+  <circle cx="256" cy="256" r="155" fill="none" stroke="#fdf2f8" stroke-width="26"/>
+  <line x1="256" y1="256" x2="256" y2="154" stroke="#fdf2f8" stroke-width="26" stroke-linecap="round"/>
+  <line x1="256" y1="256" x2="330" y2="294" stroke="#fdf2f8" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="18" fill="#fdf2f8"/>
 </svg>

@@ -61,8 +61,8 @@ export function MapView({
       if (studioLat != null && studioLng != null) {
         L.circleMarker([studioLat, studioLng], {
           radius: 7,
-          color: "#6d28d9",
-          fillColor: "#6d28d9",
+          color: "#db2777",
+          fillColor: "#db2777",
           fillOpacity: 0.9,
           weight: 2,
         })
@@ -72,9 +72,9 @@ export function MapView({
         if (radiusM && radiusM > 0) {
           const circle = L.circle([studioLat, studioLng], {
             radius: radiusM,
-            color: "#6d28d9",
+            color: "#db2777",
             weight: 1,
-            fillColor: "#6d28d9",
+            fillColor: "#db2777",
             fillOpacity: 0.08,
           }).addTo(map);
           bounds.extend(circle.getBounds());

@@ -2,6 +2,7 @@ import { requireEmployee } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { ClockCard } from "@/components/ClockCard";
 import { SignOutButton } from "@/components/SignOutButton";
+import { Logo } from "@/components/Logo";
 import Link from "next/link";
 import type { CompanySettings, Punch } from "@/lib/types";
 
@@ -27,15 +28,18 @@ export default async function ClockPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col px-4 pb-10 pt-6">
-      <header className="mb-4 flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-gray-400">
-            {(settings as CompanySettings | null)?.studio_name ??
-              "POISE Fitness Studio"}
-          </p>
-          <h1 className="text-lg font-semibold text-gray-900">
-            {employee.full_name}
-          </h1>
+      <header className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Logo className="h-11 w-11" />
+          <div>
+            <p className="text-xs uppercase tracking-wide text-gray-400">
+              {(settings as CompanySettings | null)?.studio_name ??
+                "POISE Fitness Studio"}
+            </p>
+            <h1 className="text-lg font-semibold text-gray-900">
+              {employee.full_name}
+            </h1>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {employee.role === "admin" && (

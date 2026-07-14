@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { SignOutButton } from "@/components/SignOutButton";
 import { AdminNav } from "@/components/AdminNav";
+import { Logo } from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,11 @@ export default async function AdminLayout({
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link href="/admin" className="text-lg font-semibold text-gray-900">
-              POISE Admin
+            <Link href="/admin" className="flex items-center gap-2.5">
+              <Logo className="h-9 w-9" />
+              <span className="text-lg font-semibold text-gray-900">
+                POISE Admin
+              </span>
             </Link>
           </div>
           <div className="flex items-center gap-3">

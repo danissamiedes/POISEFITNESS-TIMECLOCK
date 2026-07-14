@@ -10,8 +10,8 @@ const config: Config = {
       colors: {
         poise: {
           DEFAULT: "#111827",
-          accent: "#6d28d9",
-          light: "#f5f3ff",
+          accent: "#db2777",
+          light: "#fdf2f8",
         },
       },
     },

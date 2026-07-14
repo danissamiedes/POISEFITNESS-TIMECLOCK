@@ -8,6 +8,10 @@ export interface Employee {
   email: string;
   role: Role;
   active: boolean;
+  address: string | null;
+  date_hired: string | null; // ISO date (YYYY-MM-DD)
+  pay_rate: number | null; // per hour
+  notes: string | null;
   created_at: string;
 }
 
