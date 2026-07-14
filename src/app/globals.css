@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+/* Leaflet marker icons are loaded via CSS in the map component; keep the
+   default control styling readable. */
+.leaflet-container {
+  font: inherit;
+}
