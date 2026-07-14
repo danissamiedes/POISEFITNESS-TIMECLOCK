@@ -38,9 +38,12 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-poise-light px-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-poise-accent text-2xl">
-            ⏱️
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/poise-logo.svg"
+            alt="POISE Fitness Studio"
+            className="mx-auto mb-3 h-16 w-16 rounded-2xl object-cover"
+          />
           <h1 className="text-xl font-semibold text-gray-900">POISE Time Clock</h1>
           <p className="mt-1 text-sm text-gray-500">Sign in to clock in / out</p>
         </div>
@@ -82,7 +85,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-poise-accent py-2.5 text-sm font-semibold text-white transition hover:bg-purple-800 disabled:opacity-60"
+            className="w-full rounded-lg bg-poise-accent py-2.5 text-sm font-semibold text-white transition hover:bg-pink-700 disabled:opacity-60"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>

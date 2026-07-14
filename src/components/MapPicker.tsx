@@ -61,8 +61,8 @@ export function MapPicker({ lat, lng, radiusM, onPick }: Props) {
       if (!markerRef.current) {
         markerRef.current = L.circleMarker([lat, lng], {
           radius: 7,
-          color: "#6d28d9",
-          fillColor: "#6d28d9",
+          color: "#db2777",
+          fillColor: "#db2777",
           fillOpacity: 0.9,
         }).addTo(map);
       } else {
@@ -72,9 +72,9 @@ export function MapPicker({ lat, lng, radiusM, onPick }: Props) {
       if (!circleRef.current) {
         circleRef.current = L.circle([lat, lng], {
           radius: radiusM,
-          color: "#6d28d9",
+          color: "#db2777",
           weight: 1,
-          fillColor: "#6d28d9",
+          fillColor: "#db2777",
           fillOpacity: 0.08,
         }).addTo(map);
       } else {

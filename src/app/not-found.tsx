@@ -9,7 +9,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="rounded-lg bg-poise-accent px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
+        className="rounded-lg bg-poise-accent px-4 py-2 text-sm font-medium text-white hover:bg-pink-700"
       >
         Go to clock
       </Link>
