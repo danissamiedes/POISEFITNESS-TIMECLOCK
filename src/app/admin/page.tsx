@@ -75,7 +75,7 @@ export default async function AdminPunchesPage({
               <th className="px-4 py-3">Photo</th>
               <th className="px-4 py-3">Employee</th>
               <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Server time</th>
+              <th className="px-4 py-3">Date &amp; time (PHT)</th>
               <th className="px-4 py-3">Location</th>
               <th className="px-4 py-3">Distance</th>
               <th className="px-4 py-3"></th>
