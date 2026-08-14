@@ -1,4 +1,5 @@
 import type { Punch, Shift } from "./types";
+import { manilaDayKey } from "./datetime";
 
 /**
  * Pair consecutive in/out punches per employee into shifts.
@@ -87,8 +88,7 @@ function makeShift(
     const outMs = new Date(clockOut.server_time).getTime();
     hours = Math.max(0, (outMs - inMs) / 3_600_000);
     crossesMidnight =
-      new Date(clockIn.server_time).toDateString() !==
-      new Date(clockOut.server_time).toDateString();
+      manilaDayKey(clockIn.server_time) !== manilaDayKey(clockOut.server_time);
   }
 
   return {

@@ -12,10 +12,20 @@ const BUCKET = process.env.NEXT_PUBLIC_PHOTO_BUCKET ?? "punch-photos";
 
 export interface PunchFilter {
   employeeId?: string;
-  /** inclusive ISO datetime lower bound */
+  /** inclusive lower bound: a Manila calendar day (YYYY-MM-DD) or full ISO */
   from?: string;
-  /** inclusive ISO datetime upper bound */
+  /** inclusive upper bound: a Manila calendar day (YYYY-MM-DD) or full ISO */
   to?: string;
+}
+
+// Date-only filter values are Manila calendar days. Anchor them to the start /
+// end of that day in UTC+8 so a punch just after local midnight isn't clipped.
+const DAY_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+function fromBoundary(d: string): string {
+  return DAY_ONLY.test(d) ? `${d}T00:00:00.000+08:00` : d;
+}
+function toBoundary(d: string): string {
+  return DAY_ONLY.test(d) ? `${d}T23:59:59.999+08:00` : d;
 }
 
 /** All employees, ordered by name. Service-role read (admin pages only). */
@@ -53,8 +63,8 @@ export async function fetchPunches(
     .limit(2000);
 
   if (filter.employeeId) query = query.eq("employee_id", filter.employeeId);
-  if (filter.from) query = query.gte("server_time", filter.from);
-  if (filter.to) query = query.lte("server_time", filter.to);
+  if (filter.from) query = query.gte("server_time", fromBoundary(filter.from));
+  if (filter.to) query = query.lte("server_time", toBoundary(filter.to));
 
   const { data, error } = await query;
   if (error) throw error;
@@ -98,8 +108,8 @@ export async function fetchPunchesRaw(filter: PunchFilter): Promise<Punch[]> {
     .order("server_time", { ascending: true })
     .limit(5000);
   if (filter.employeeId) query = query.eq("employee_id", filter.employeeId);
-  if (filter.from) query = query.gte("server_time", filter.from);
-  if (filter.to) query = query.lte("server_time", filter.to);
+  if (filter.from) query = query.gte("server_time", fromBoundary(filter.from));
+  if (filter.to) query = query.lte("server_time", toBoundary(filter.to));
   const { data, error } = await query;
   if (error) throw error;
   return (data as Punch[]) ?? [];
