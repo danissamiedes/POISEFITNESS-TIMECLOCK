@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { haversineMeters, formatMeters } from "@/lib/geo";
+import { formatDateTime } from "@/lib/datetime";
 import type { CompanySettings, Punch, PunchType } from "@/lib/types";
 
 const PHOTO_BUCKET = process.env.NEXT_PUBLIC_PHOTO_BUCKET ?? "punch-photos";
@@ -212,7 +213,7 @@ export function ClockCard({ employeeId, nextAction, lastPunch, settings }: Props
             You&apos;re clocked {result.type === "in" ? "in" : "out"}
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            {new Date(result.time).toLocaleString()}
+            {formatDateTime(result.time)}
           </p>
           {result.outOfRange && (
             <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
@@ -331,7 +332,7 @@ export function ClockCard({ employeeId, nextAction, lastPunch, settings }: Props
       {lastPunch && (
         <p className="mt-4 text-center text-xs text-gray-500">
           Last punch: clocked {lastPunch.punch_type === "in" ? "in" : "out"} at{" "}
-          {new Date(lastPunch.server_time).toLocaleString()}
+          {formatDateTime(lastPunch.server_time)}
         </p>
       )}
     </Card>

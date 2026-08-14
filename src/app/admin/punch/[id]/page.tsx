@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchPunch, fetchSettings } from "@/lib/admin-data";
 import { formatMeters } from "@/lib/geo";
+import { formatDateTime } from "@/lib/datetime";
 import { MapView } from "@/components/MapView";
 
 export const dynamic = "force-dynamic";
@@ -57,8 +58,8 @@ export default async function PunchDetailPage({
               value={punch.punch_type === "in" ? "Clock In" : "Clock Out"}
             />
             <Row
-              label="Server time"
-              value={new Date(punch.server_time).toLocaleString()}
+              label="Server time (PHT)"
+              value={formatDateTime(punch.server_time)}
             />
             <Row
               label="Coordinates"

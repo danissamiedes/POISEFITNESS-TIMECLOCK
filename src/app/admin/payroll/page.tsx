@@ -1,5 +1,6 @@
 import { fetchEmployees, fetchPunchesRaw, type PunchFilter } from "@/lib/admin-data";
 import { pairShifts, summarizePayroll } from "@/lib/shifts";
+import { formatDateTime } from "@/lib/datetime";
 import { PayrollControls } from "@/components/PayrollControls";
 import { ExportPayrollButton } from "@/components/ExportPayrollButton";
 
@@ -142,12 +143,10 @@ function ShiftBreakdown({
                   {s.employee_name}
                 </td>
                 <td className="px-4 py-2 text-gray-600">
-                  {new Date(s.clock_in.server_time).toLocaleString()}
+                  {formatDateTime(s.clock_in.server_time)}
                 </td>
                 <td className="px-4 py-2 text-gray-600">
-                  {s.clock_out
-                    ? new Date(s.clock_out.server_time).toLocaleString()
-                    : "—"}
+                  {s.clock_out ? formatDateTime(s.clock_out.server_time) : "—"}
                 </td>
                 <td className="px-4 py-2 font-medium text-gray-900">
                   {s.hours != null ? s.hours.toFixed(2) : "—"}

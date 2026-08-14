@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { fetchEmployees, fetchPunches, type PunchFilter } from "@/lib/admin-data";
 import { formatMeters } from "@/lib/geo";
+import { formatDateTime } from "@/lib/datetime";
 import { PunchFilters } from "@/components/PunchFilters";
 import { ExportPunchesButton } from "@/components/ExportPunchesButton";
 
@@ -74,7 +75,7 @@ export default async function AdminPunchesPage({
               <th className="px-4 py-3">Photo</th>
               <th className="px-4 py-3">Employee</th>
               <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Server time</th>
+              <th className="px-4 py-3">Date &amp; time (PHT)</th>
               <th className="px-4 py-3">Location</th>
               <th className="px-4 py-3">Distance</th>
               <th className="px-4 py-3"></th>
@@ -121,7 +122,7 @@ export default async function AdminPunchesPage({
                     </span>
                   </td>
                   <td className="px-4 py-2 text-gray-600">
-                    {new Date(p.server_time).toLocaleString()}
+                    {formatDateTime(p.server_time)}
                   </td>
                   <td className="px-4 py-2 text-gray-600">
                     {p.latitude != null && p.longitude != null ? (

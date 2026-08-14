@@ -1,6 +1,7 @@
 "use client";
 
 import { toCsv, downloadCsv } from "@/lib/csv";
+import { formatDateTime } from "@/lib/datetime";
 import type { PunchType } from "@/lib/types";
 
 interface Row {
@@ -20,8 +21,8 @@ export function ExportPunchesButton({ punches }: { punches: Row[] }) {
       [
         "Employee",
         "Type",
-        "Server time (ISO)",
-        "Server time (local)",
+        "Server time (ISO/UTC)",
+        "Server time (PHT)",
         "Latitude",
         "Longitude",
         "Accuracy (m)",
@@ -32,7 +33,7 @@ export function ExportPunchesButton({ punches }: { punches: Row[] }) {
         p.name,
         p.type === "in" ? "Clock In" : "Clock Out",
         p.time,
-        new Date(p.time).toLocaleString(),
+        formatDateTime(p.time),
         p.lat ?? "",
         p.lng ?? "",
         p.accuracy != null ? Math.round(p.accuracy) : "",
