@@ -43,6 +43,7 @@ export interface CompanySettings {
   block_out_of_range: boolean;
   require_photo: boolean;
   require_location: boolean;
+  logo_url: string | null;
   updated_at: string;
 }
 
