@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { SignOutButton } from "@/components/SignOutButton";
 import { AdminNav } from "@/components/AdminNav";
 import { Logo } from "@/components/Logo";
+import { APP_NAME } from "@/lib/brand";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export default async function AdminLayout({
             <Link href="/admin" className="flex items-center gap-2.5">
               <Logo className="h-9 w-9" />
               <span className="text-lg font-semibold text-gray-900">
-                POISE Admin
+                {APP_NAME} Admin
               </span>
             </Link>
           </div>

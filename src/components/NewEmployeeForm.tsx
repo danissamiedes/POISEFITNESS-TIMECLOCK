@@ -144,7 +144,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-lg bg-poise-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-pink-700 disabled:opacity-60"
+      className="rounded-lg bg-poise-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-poise-accentHover disabled:opacity-60"
     >
       {pending ? "Creating…" : "Create employee"}
     </button>
