@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ClockCard } from "@/components/ClockCard";
 import { SignOutButton } from "@/components/SignOutButton";
 import { Logo } from "@/components/Logo";
+import { APP_NAME } from "@/lib/brand";
 import Link from "next/link";
 import type { CompanySettings, Punch } from "@/lib/types";
 
@@ -33,8 +34,7 @@ export default async function ClockPage() {
           <Logo className="h-11 w-11" />
           <div>
             <p className="text-xs uppercase tracking-wide text-gray-400">
-              {(settings as CompanySettings | null)?.studio_name ??
-                "POISE Fitness Studio"}
+              {(settings as CompanySettings | null)?.studio_name ?? APP_NAME}
             </p>
             <h1 className="text-lg font-semibold text-gray-900">
               {employee.full_name}
@@ -61,13 +61,14 @@ export default async function ClockPage() {
         settings={
           (settings as CompanySettings) ?? {
             id: 1,
-            studio_name: "POISE Fitness Studio",
+            studio_name: APP_NAME,
             studio_lat: null,
             studio_lng: null,
             geofence_radius_m: 150,
             block_out_of_range: false,
             require_photo: true,
             require_location: true,
+            logo_url: null,
             updated_at: new Date().toISOString(),
           }
         }

@@ -63,7 +63,7 @@ export function LogoUploadForm({ currentLogo }: { currentLogo: string | null }) 
             name="logo"
             accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
             onChange={onPick}
-            className="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-poise-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-pink-700"
+            className="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-poise-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-poise-accentHover"
           />
           <div className="flex items-center gap-3">
             <SaveButton />
@@ -104,7 +104,7 @@ function SaveButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-lg bg-poise-accent px-4 py-2 text-sm font-semibold text-white hover:bg-pink-700 disabled:opacity-60"
+      className="rounded-lg bg-poise-accent px-4 py-2 text-sm font-semibold text-white hover:bg-poise-accentHover disabled:opacity-60"
     >
       {pending ? "Uploading…" : "Upload logo"}
     </button>

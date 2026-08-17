@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { ACCENT } from "@/lib/brand";
 
 interface Props {
   lat: number;
@@ -61,8 +62,8 @@ export function MapView({
       if (studioLat != null && studioLng != null) {
         L.circleMarker([studioLat, studioLng], {
           radius: 7,
-          color: "#db2777",
-          fillColor: "#db2777",
+          color: ACCENT,
+          fillColor: ACCENT,
           fillOpacity: 0.9,
           weight: 2,
         })
@@ -72,9 +73,9 @@ export function MapView({
         if (radiusM && radiusM > 0) {
           const circle = L.circle([studioLat, studioLng], {
             radius: radiusM,
-            color: "#db2777",
+            color: ACCENT,
             weight: 1,
-            fillColor: "#db2777",
+            fillColor: ACCENT,
             fillOpacity: 0.08,
           }).addTo(map);
           bounds.extend(circle.getBounds());
