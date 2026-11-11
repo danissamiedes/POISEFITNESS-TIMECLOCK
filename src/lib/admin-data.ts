@@ -50,6 +50,39 @@ export async function fetchSettings(): Promise<CompanySettings> {
   return data as CompanySettings;
 }
 
+export interface StorageUsage {
+  bytes: number;
+  files: number;
+  buckets: { bucket_id: string; file_count: number; bytes: number }[];
+}
+
+/** Total storage used across buckets, via the storage_usage() RPC.
+ *  Returns null if the function isn't installed yet (migration not run). */
+export async function fetchStorageUsage(): Promise<StorageUsage | null> {
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin.rpc("storage_usage");
+    if (error) return null;
+    const rows = (data ?? []) as {
+      bucket_id: string;
+      file_count: number | string;
+      bytes: number | string;
+    }[];
+    const buckets = rows.map((r) => ({
+      bucket_id: r.bucket_id,
+      file_count: Number(r.file_count) || 0,
+      bytes: Number(r.bytes) || 0,
+    }));
+    return {
+      bytes: buckets.reduce((s, b) => s + b.bytes, 0),
+      files: buckets.reduce((s, b) => s + b.file_count, 0),
+      buckets,
+    };
+  } catch {
+    return null;
+  }
+}
+
 /** Filtered punches (newest first) plus signed photo thumbnail URLs. */
 export async function fetchPunches(
   filter: PunchFilter
