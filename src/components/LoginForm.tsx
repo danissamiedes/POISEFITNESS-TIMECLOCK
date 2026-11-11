@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { APP_NAME } from "@/lib/brand";
 
 export function LoginForm({ logoUrl }: { logoUrl: string }) {
   const router = useRouter();
@@ -41,10 +42,10 @@ export function LoginForm({ logoUrl }: { logoUrl: string }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={logoUrl}
-            alt="POISE Fitness Studio"
+            alt={APP_NAME}
             className="mx-auto mb-3 h-16 w-16 rounded-2xl object-cover"
           />
-          <h1 className="text-xl font-semibold text-gray-900">POISE Time Clock</h1>
+          <h1 className="text-xl font-semibold text-gray-900">{APP_NAME} Time Clock</h1>
           <p className="mt-1 text-sm text-gray-500">Sign in to clock in / out</p>
         </div>
 
@@ -85,7 +86,7 @@ export function LoginForm({ logoUrl }: { logoUrl: string }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-poise-accent py-2.5 text-sm font-semibold text-white transition hover:bg-pink-700 disabled:opacity-60"
+            className="w-full rounded-lg bg-poise-accent py-2.5 text-sm font-semibold text-white transition hover:bg-poise-accentHover disabled:opacity-60"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>

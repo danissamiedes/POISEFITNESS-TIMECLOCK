@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Map as LeafletMap, CircleMarker, Circle } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { ACCENT } from "@/lib/brand";
 
 interface Props {
   lat: number | null;
@@ -61,8 +62,8 @@ export function MapPicker({ lat, lng, radiusM, onPick }: Props) {
       if (!markerRef.current) {
         markerRef.current = L.circleMarker([lat, lng], {
           radius: 7,
-          color: "#db2777",
-          fillColor: "#db2777",
+          color: ACCENT,
+          fillColor: ACCENT,
           fillOpacity: 0.9,
         }).addTo(map);
       } else {
@@ -72,9 +73,9 @@ export function MapPicker({ lat, lng, radiusM, onPick }: Props) {
       if (!circleRef.current) {
         circleRef.current = L.circle([lat, lng], {
           radius: radiusM,
-          color: "#db2777",
+          color: ACCENT,
           weight: 1,
-          fillColor: "#db2777",
+          fillColor: ACCENT,
           fillOpacity: 0.08,
         }).addTo(map);
       } else {

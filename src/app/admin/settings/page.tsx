@@ -1,11 +1,15 @@
-import { fetchSettings } from "@/lib/admin-data";
+import { fetchSettings, fetchStorageUsage } from "@/lib/admin-data";
 import { SettingsForm } from "@/components/SettingsForm";
 import { LogoUploadForm } from "@/components/LogoUploadForm";
+import { StorageUsageCard } from "@/components/StorageUsageCard";
+import { RETENTION_DAYS } from "@/lib/photo-retention";
 
 export const dynamic = "force-dynamic";
 
+const STORAGE_LIMIT_MB = Number(process.env.NEXT_PUBLIC_STORAGE_LIMIT_MB) || 1024;
+
 export default async function SettingsPage() {
-  const settings = await fetchSettings();
+  const [settings, usage] = await Promise.all([fetchSettings(), fetchStorageUsage()]);
   return (
     <div className="max-w-3xl space-y-6">
       <div>
@@ -16,6 +20,13 @@ export default async function SettingsPage() {
         </p>
       </div>
       <LogoUploadForm currentLogo={settings.logo_url} />
+      <StorageUsageCard
+        bytes={usage?.bytes ?? 0}
+        files={usage?.files ?? 0}
+        limitBytes={STORAGE_LIMIT_MB * 1024 * 1024}
+        retentionDays={RETENTION_DAYS}
+        available={usage != null}
+      />
       <SettingsForm settings={settings} />
     </div>
   );
